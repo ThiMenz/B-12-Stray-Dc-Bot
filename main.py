@@ -33,8 +33,8 @@ theGuild = None
 categoryOfVoiceChannels = None
 memberRole = None
 
-nicePeopleArray = ["Meister Möhre#1623", "SurprisedPika#7953", "OrangeChef#4553"]
-godDamnNicePeopleArray = ["Meister Möhre#1623", "SurprisedPika#7953", "OrangeChef#4553"]
+nicePeopleArray = ["Meister Möhre#7979", "SurprisedPika#7953", "OrangeChef#4553"]
+godDamnNicePeopleArray = ["Meister Möhre#7979", "SurprisedPika#7953", "OrangeChef#4553"]
 
 listOfBotStatus = ['Stray']
 activeBotStatus = 0
@@ -87,7 +87,7 @@ class MyClient(discord.Client):
             roleFile.close()
             
             messageArgs = messageStr[15:].split(" ")
-            messageID = messageArgs[0].replace("https://discord.com/channels/", "").split('/')[2]
+            messageID = messageArgs[0].replace("https://discord.com/channels/", "").replace("https://discordapp.com/channels/", "").split('/')[2]
             
             if messageArgs[1] != "True" and messageArgs[1] != "False": return await message.channel.send("You have to enter a valid bool value: True or False")
             
@@ -102,28 +102,32 @@ class MyClient(discord.Client):
             return await message.channel.send("Successfully changed the reactiontype from: " + messageArgs[0])
             
         if str(prefix + 'reaction') in messageStr.lower():
-            roleFile = open("Roles.txt", "r", encoding='utf-8')
-            roleFileRL = roleFile.readlines()
-            roleFile.close()
-            
-            messageArgs = messageStr[11:].split(" ")
-            
-            splittedFirstArgLink = messageArgs[0].replace("https://discord.com/channels/", "").split('/')
-            
-            tchannel = client.get_channel(int(splittedFirstArgLink[1]))
-            msg = await tchannel.fetch_message(int(splittedFirstArgLink[2]))
-            await msg.add_reaction(messageArgs[1])
-            onlyonerole = False
-            if len(messageArgs) > 3: 
-                if messageArgs[3] == "True": onlyonerole = True
-            roleFileW = open("Roles.txt", "w", encoding='utf-8')
-            for ln in roleFileRL: roleFileW.write(ln)
-            msgId = str(msg.id)
-            strBool = str(onlyonerole)
-            emoji = str(messageArgs[1])
-            theRole = discord.utils.get(message.author.guild.roles, name=str(messageArgs[2]))
-            roleFileW.write(msgId + "~" + strBool + "~" + emoji + "~" + str(theRole.id) + " \n")
-            await message.channel.send("Successfully added the reaction to: " + str(msg.jump_url))
+            try:
+                print("[Used command m!reaction]")
+                roleFile = open("Roles.txt", "r", encoding='utf-8')
+                roleFileRL = roleFile.readlines()
+                roleFile.close()
+                
+                messageArgs = messageStr[11:].split(" ")
+                
+                splittedFirstArgLink = messageArgs[0].replace("https://discord.com/channels/", "").replace("https://discordapp.com/channels/", "").split('/')
+                
+                tchannel = client.get_channel(int(splittedFirstArgLink[1]))
+                msg = await tchannel.fetch_message(int(splittedFirstArgLink[2]))
+                await msg.add_reaction(messageArgs[1])
+                onlyonerole = False
+                if len(messageArgs) > 3: 
+                    if messageArgs[3] == "True": onlyonerole = True
+                roleFileW = open("Roles.txt", "w", encoding='utf-8')
+                for ln in roleFileRL: roleFileW.write(ln)
+                msgId = str(msg.id)
+                strBool = str(onlyonerole)
+                emoji = str(messageArgs[1])
+                theRole = discord.utils.get(message.author.guild.roles, name=str(messageArgs[2]))
+                roleFileW.write(msgId + "~" + strBool + "~" + emoji + "~" + str(theRole.id) + " \n")
+                await message.channel.send("Successfully added the reaction to: " + str(msg.jump_url))
+            except Exception as e:
+                return await message.channel.send("An error occured: " + str(e))
 
     
     #===Reaction Add===
